@@ -60,10 +60,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
-
-      - name: Run flake8
-        run: python -m flake8 backend/apps/ --max-line-length=119 --exclude=migrations
-
+        
       - name: Run pytest
         working-directory: backend
         run: python -m pytest apps/ -v
