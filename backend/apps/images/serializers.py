@@ -3,7 +3,6 @@ from rest_framework import serializers
 from PIL import Image as PillowImage
 from services.storage_service import storage_service
 
-
 class ImageUploadSerializer(serializers.Serializer):
     file = serializers.ImageField()
 
@@ -22,6 +21,7 @@ class ImageUploadSerializer(serializers.Serializer):
             raise serializers.ValidationError({'error': 'File is not a valid image.'})
         
         img = PillowImage.open(file)
+        print(img.format)
         if img.format not in allowed_formats:
             raise serializers.ValidationError({'error': f"Unsupported format. Allowed: {', '.join(allowed_formats)}"})
         file.seek(0)
