@@ -1,4 +1,5 @@
 import os
+import io
 import boto3
 import uuid
 from django.conf import settings
@@ -38,6 +39,25 @@ class StorageService:
         else:
             return f"http://localhost:8000{settings.MEDIA_URL}{key}"
 
+    def get_file(self, key):
+        if settings.USE_S3:
+            s3 = self._get_s3_client()
+            response = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+            file_bytes = response['Body'].read()
+            buffer = io.BytesIO(file_bytes)
+            buffer.seek(0)
+            return buffer
+        else:
+            path = os.path.join(settings.MEDIA_ROOT, key)
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"File not found: {key}")
+            
+            with open(path, 'rb') as file:
+                file_bytes = file.read()
+                
+            buffer = io.BytesIO(file_bytes)
+            buffer.seek(0)
+            return buffer
         
 
     def delete(self, key):

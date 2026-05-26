@@ -8,7 +8,7 @@ class Image(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='images')
     original_filename = models.CharField(max_length=250)
-    file = models.ImageField()
+    file = models.CharField(max_length=500)
     file_size = models.PositiveIntegerField()
     width = models.PositiveIntegerField()
     height = models.PositiveIntegerField()
@@ -17,6 +17,12 @@ class Image(models.Model):
 
 
 class ImageTransformation(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending'
+        PROCESSING = 'processing'
+        COMPLETE = 'complete'
+        FAILED = 'failed'
+
     class Meta:
         ordering = ['-created_at']
 
@@ -26,4 +32,6 @@ class ImageTransformation(models.Model):
     width = models.PositiveIntegerField()
     height = models.PositiveIntegerField()
     format_image = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+    error = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
